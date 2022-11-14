@@ -17,7 +17,7 @@ from skimage import io
 
 sns.set_style("whitegrid", {'axes.grid': False})
 
-GOOGLE_API_KEY = 'AIzaSyD5xV6b4K0oKs5VChZQSj2temmOeg-oCIE'
+GOOGLE_API_KEY = 'google-api-key'
 abbr = abbreviate.Abbreviate()
 
 
