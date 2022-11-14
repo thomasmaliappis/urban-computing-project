@@ -1,1 +1,4 @@
-./extracted-data
+cache/
+extracted-data/
+processed-data/
+test*

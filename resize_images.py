@@ -5,7 +5,12 @@ path = Path('extracted-data\imagery\\athina, gr\Agricultural + Semi-natural area
 image = Image.open(path)
 
 new_image = image.resize((512, 512))
-new_image.save('myimage_512.jpg')
+new_image.save('test_512.jpg')
+new_image = image.resize((256, 256))
+new_image.save('test_256.jpg')
+new_image = image.resize((128, 128))
+new_image.save('test_128.jpg')
+
 
 # TODO create function that resizes all images in 128, 256 and 512 sizes
 # does not only need resize but also cropping for zoom purposes
