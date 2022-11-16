@@ -35,34 +35,6 @@ def load_locations(path):
     return locations
 
 
-# def construct_static_url(latlon, zoom=17, imgsize=(500, 500),
-#                          maptype="roadmap", imgformat="jpeg"):
-#     center = "%2.5f,%2.5f" % latlon if type(latlon) == tuple else latlon
-#     return construct_googlemaps_url_request(
-#         center=center,
-#         zoom=zoom,
-#         imgsize=imgsize,
-#         maptype=maptype,
-#         imgformat=imgformat,
-#         apiKey=GOOGLE_API_KEY)
-# def construct_googlemaps_url_request(center=None, zoom=None, imgsize=(500, 500),
-#                                      maptype="roadmap", apiKey="", imgformat="jpeg"):
-#     # base URL, append query params, separated by &
-#     request = "http://maps.google.com/maps/api/staticmap?"
-#     if center is not None:
-#         request += "center=%s&" % center.replace(" ", "+")
-#     if zoom is not None:
-#         # zoom 0 (all of the world scale ) to 22 (single buildings scale)
-#         request += "zoom=%d&" % zoom
-#     if apiKey is not None:
-#         request += "key=%s&" % apiKey
-#     request += "size=%dx%d&" % imgsize  # tuple of ints, up to 640 by 640
-#     request += "format=%s&" % imgformat
-#     # roadmap, satellite, hybrid, terrain
-#     request += "maptype=%s&sensor=false" % maptype
-#     return request
-
-
 def get_static_google_map(response, filename=None, crop=False):
 
     # check for an error (no image at requested location)
@@ -124,30 +96,35 @@ def download_images(locations, prefix="", out_path="./"):
 
     for i, r in locations.iterrows():
         clear_output(wait=True)
+
+        if n_requests >= MAX_REQUESTS:
+            print("Number of requests exceeded!")
+            break
+
         print("Pulling image %d/%d... (# API requests = %d)" %
               (i, len(locations), n_requests))
         label, lat, lon, grid_i, grid_j = r['class'], r['lat'], r['lon'], r['grid-i'], r['grid-j']
 
-        basename = "%s/%s/%s_z%d_%2.5f_%2.5f" % (
-            str(out_path), label, prefix, ZOOM, lat, lon)
+        basename = "{}/{}/{}_z{}_s{}_{}_{}".format(
+            str(out_path), label, prefix, ZOOM, IMG_SIZE, lat, lon)
+
         if not np.isnan(grid_i) and not np.isnan(grid_j):
-            cur_filename = "%s_grid-i%d_grid-j%d.jpg" % (
+            cur_filename = "{}_grid-i{}_grid-j{}.jpg".format(
                 basename, grid_i, grid_j)
         else:
-            cur_filename = "%s.jpg" % basename
+            cur_filename = "{}.jpg".format(basename)
         print(cur_filename)
 
         if os.path.exists(cur_filename):
             continue
 
-        # req = construct_static_url((lat, lon), maptype="satellite", zoom=ZOOM, imgsize=(
-        #     int(img_size*1.18), int(img_size*1.18)))
         img = get_static_map_image((lat, lon), maptype="satellite", zoom=ZOOM, imgsize=(int(
-            img_size*1.18), int(img_size*1.18)), filename=cur_filename, max_tries=MAX_TRIES, crop=True)
+            IMG_SIZE*1.18), int(IMG_SIZE*1.18)), filename=cur_filename, max_tries=MAX_TRIES, crop=True)
 
-        if img is None or n_requests >= MAX_REQUESTS:
+        if img is None:
             print("API requests quota exceeded!")
             break
+
         n_requests += 1
 
         # display samples every now and then
@@ -164,13 +141,6 @@ if __name__ == "__main__":
         outPath.mkdir()
     locations_path = Path("./processed-data")
 
-    # grid_location_path = str(locations_path / "*/sample_locations_raster_25km.csv")
-    # grid_location_files = glob.glob(grid_location_path)
-    # print(grid_location_files)
-    # more_location_path = str(locations_path / "*/additional_sample_locations.csv")
-    # more_location_files = glob.glob(more_location_path)
-    # print(more_location_files)
-
     locations = {}
     for path in locations_path.iterdir():
         locations[path.name] = load_locations(str(path))
@@ -179,7 +149,7 @@ if __name__ == "__main__":
 
     MAX_REQUESTS = 1
     MAX_TRIES = 2
-    img_size = 224
+    IMG_SIZE = 512
     ZOOM = 17
 
     n_requests = 0
@@ -192,7 +162,8 @@ if __name__ == "__main__":
     # download data for all cities from data
     for city, city_locations in locations.items():
         out_path = extraction_path / city
-        download_images(city_locations, prefix=city.split(',')[0], out_path=out_path)
+        download_images(city_locations, prefix=city.split(',')
+                        [0], out_path=out_path)
     # print(n_requests)
 
     # get_static_map_image test
