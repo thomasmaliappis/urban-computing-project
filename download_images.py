@@ -88,7 +88,7 @@ def get_static_map_image(center=None, zoom=17, imgsize=(500, 500), maptype="sate
     return None
 
 
-def download_images(locations, prefix="", out_path="./"):
+def download_images(locations, prefix="", out_path="./", plot=False):
     if not out_path.exists():
         out_path.mkdir()
 
@@ -104,6 +104,13 @@ def download_images(locations, prefix="", out_path="./"):
         print("Pulling image %d/%d... (# API requests = %d)" %
               (i, len(locations), n_requests))
         label, lat, lon, grid_i, grid_j = r['class'], r['lat'], r['lon'], r['grid-i'], r['grid-j']
+
+        if ':' in label:
+            label = label.replace(':', '')
+        elif '>' in label:
+            label = label.replace('>', '')
+        elif '<' in label:
+            label = label.replace('<', '')
 
         basename = "{}/{}/{}_z{}_s{}_{}_{}".format(
             str(out_path), label, prefix, ZOOM, IMG_SIZE, lat, lon)
@@ -128,7 +135,7 @@ def download_images(locations, prefix="", out_path="./"):
         n_requests += 1
 
         # display samples every now and then
-        if i % 100 == 0:
+        if i % 100 == 0 and plot:
             plt.imshow(img)
             plt.title("image %d (label = %s)" % (i, label))
             plt.show()
@@ -147,7 +154,7 @@ if __name__ == "__main__":
 
     print(locations.keys())
 
-    MAX_REQUESTS = 1
+    MAX_REQUESTS = 5000
     MAX_TRIES = 2
     IMG_SIZE = 512
     ZOOM = 17
