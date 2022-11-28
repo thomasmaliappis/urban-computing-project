@@ -5,3 +5,4 @@ processed-data/
 test*
 load_images.py
 resize_images.py
+images.npz
