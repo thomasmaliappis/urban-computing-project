@@ -1,4 +1,7 @@
 cache/
 extracted-data/
+extracted-data.zip
 processed-data/
 test*
+load_images.py
+resize_images.py
