@@ -4,6 +4,8 @@ processed-data/
 # big files
 extracted-data.zip
 images.npz
+cities.npz
+classes.npz
 # python files
 dataset_analysis.py
 load_images.py
