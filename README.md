@@ -8,14 +8,15 @@ add plot image
 network description
 -->
 
-- download_images.py
-    
-    Uses Google Static Maps API to download satellite images for the given locations.
+# Dataset
+The dataset used is [Urban Atlas dataset](https://land.copernicus.eu/local/urban-atlas/urban-atlas-2018?tab=download). The processed-data used were provided in this [GitHub project](https://github.com/adrianalbert/urban-environments).
 
-- read_and_resample.ipynb
+A simple analysis of the dataset can be found in [dataset_analysis.ipynb](./download_images.py)
+# Process
+Google Static Maps API is used to download satellite images for the given locations. ([download_images.py](./download_images.py))
 
-    Reads the downloaded image data and resamples them. It also plots some sample images for each class of data.
+In order to use this API you need to create a google api key using these [instructions](https://developers.google.com/maps/documentation/javascript/get-api-key).
 
-- network.ipynb
+After downloading the satellite images we resample each image. ([read_and_resample.ipynb](./read_and_resample.ipynb))
 
-    A neural network is trained using the resampled image data.
+The resampled images are used to train our neural network. ([download_images.py](./network.ipynb))
