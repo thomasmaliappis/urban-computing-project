@@ -1,4 +1,5 @@
 # folders
+.idea
 extracted-data/
 processed-data/
 # big files
